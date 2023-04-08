@@ -6,6 +6,7 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwt_secret = "qwertypoiu12324345";
+const port = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 const MongoURL = "mongodb+srv://anurag:Anurag%408546@cluster0.ywvo22p.mongodb.net/?retryWrites=true&w=majority";
@@ -17,11 +18,13 @@ mongoose.connect(MongoURL, {
 }).then(() => { console.log("connected to DB"); })
     .catch((e) => console.log(e));
 const user = mongoose.model("userInfo");
+
+app.get("/", async (req, res) => {
+    res.json({ status: 200, message: "Server up and running" });
+})
 app.post("/register", async (req, res) => {
     const { fname, lname, email, password } = req.body;
-    // consconsole.log(req);
     const encryptPassword = await bcrypt.hash(password, 10);
-    // res.json({status:200, message:"Route working"});
     try {
         const oldUser = await user.findOne({ email });
         if (oldUser) {
@@ -67,13 +70,13 @@ app.post("/login-user", async (req, res) => {
         console.log("login successful")
         console.log(token);
         console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-         res.json({ status: "ok", data: token });
+        res.json({ status: "ok", data: token });
     }
     else {
-         res.json({ error: "error" });
+        res.json({ error: "error" });
     }
 
-   });
+});
 
 
 
@@ -90,6 +93,6 @@ app.post("/nasaImg", async (req, res) => {
     }
 });
 
-app.listen(5000, () => {
+app.listen(port, () => {
     console.log("server Started");
 })
